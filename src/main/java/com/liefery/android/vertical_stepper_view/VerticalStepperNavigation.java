@@ -53,4 +53,8 @@ public class VerticalStepperNavigation {
         } else
             return null;
     }
+
+    public boolean isLast() {
+        return next == -1;
+    }
 }

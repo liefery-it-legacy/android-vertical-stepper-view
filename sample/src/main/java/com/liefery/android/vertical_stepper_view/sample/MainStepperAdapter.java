@@ -10,6 +10,8 @@ import com.liefery.android.vertical_stepper_view.VerticalStepperAdapter;
 import com.liefery.android.vertical_stepper_view.VerticalStepperItemView;
 import com.liefery.android.vertical_stepper_view.VerticalStepperNavigation;
 
+import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.STATE_COMPLETE;
+
 public class MainStepperAdapter extends VerticalStepperAdapter {
     public MainStepperAdapter() {
         super();
@@ -42,19 +44,21 @@ public class MainStepperAdapter extends VerticalStepperAdapter {
         Context context,
         int position,
         final VerticalStepperNavigation navigation,
-        VerticalStepperItemView parent ) {
-        //        View content = LayoutInflater.from( context ).inflate(
-        //            R.layout.item,
-        //            parent,
-        //            false );
-        View content = new ContentView( context );
+        final VerticalStepperItemView parent ) {
+        View content = LayoutInflater.from( context ).inflate(
+            R.layout.item,
+            parent,
+            false );
 
         Button actionContinue = content.findViewById( R.id.action_continue );
-        actionContinue.setEnabled( navigation.hasNext() );
+        actionContinue.setEnabled( navigation.hasNext() || navigation.isLast() );
         actionContinue.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick( View v ) {
-                navigation.next();
+                if ( navigation.isLast() )
+                    parent.setState( STATE_COMPLETE );
+                else
+                    navigation.next();
             }
         } );
 
