@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    
+    <color name="vertical_stepper_view_grey_100">#BDBDBD</color>
+    <color name="vertical_stepper_view_black_87">#DE000000</color>
+    <color name="vertical_stepper_view_black_38">#61000000</color>
+    
+</resources>

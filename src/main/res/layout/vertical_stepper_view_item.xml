@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Circle -->
+
+    <com.liefery.android.vertical_stepper_view.VerticalStepperItemCircleView
+        android:id="@+id/vertical_stepper_view_item_circle"
+        android:layout_width="24dp"
+        android:layout_height="24dp" />
+
+    <LinearLayout
+        android:id="@+id/vertical_stepper_view_item_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="36dp"
+        android:layout_marginTop="2dp"
+        android:clipChildren="false"
+        android:orientation="vertical">
+
+        <!-- Title -->
+
+        <TextView
+            android:id="@+id/vertical_stepper_view_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp" />
+
+        <!-- Summary -->
+
+        <TextView
+            android:id="@+id/vertical_stepper_view_item_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp" />
+
+        <!-- Content -->
+
+        <FrameLayout
+            android:id="@+id/vertical_stepper_view_item_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:clipChildren="false" />
+
+    </LinearLayout>
+
+</merge>
