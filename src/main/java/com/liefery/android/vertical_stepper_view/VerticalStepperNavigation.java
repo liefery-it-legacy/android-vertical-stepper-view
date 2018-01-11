@@ -3,6 +3,7 @@ package com.liefery.android.vertical_stepper_view;
 import android.support.annotation.Nullable;
 
 import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.STATE_ACTIVE;
+import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.STATE_COMPLETE;
 import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.STATE_INACTIVE;
 
 public class VerticalStepperNavigation {
@@ -46,7 +47,7 @@ public class VerticalStepperNavigation {
     @Nullable
     public VerticalStepperItemView next() {
         if ( hasNext() ) {
-            adapter.getItem( current ).setState( STATE_INACTIVE );
+            adapter.getItem( current ).setState( STATE_COMPLETE );
             adapter.getItem( next ).setState( STATE_ACTIVE );
             return adapter.getItem( next );
         } else

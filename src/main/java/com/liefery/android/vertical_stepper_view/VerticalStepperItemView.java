@@ -4,9 +4,13 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.*;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -29,6 +33,8 @@ public class VerticalStepperItemView extends FrameLayout {
     private boolean editable = false;
 
     private VerticalStepperItemCircleView circle;
+
+    private int number;
 
     private LinearLayout wrapper;
 
@@ -92,6 +98,10 @@ public class VerticalStepperItemView extends FrameLayout {
         connector = new ConnectorLineDrawer( context );
     }
 
+    public VerticalStepperView getVerticalStepperView() {
+        return (VerticalStepperView) getParent();
+    }
+
     public void setShowConnectorLine( boolean show ) {
         showConnectorLine = show;
     }
@@ -109,8 +119,10 @@ public class VerticalStepperItemView extends FrameLayout {
     }
 
     public void setCircleNumber( int number ) {
+        this.number = number;
+
         if ( state != STATE_COMPLETE )
-            this.circle.setNumber( number );
+            circle.setNumber( number );
     }
 
     public void setTitle( CharSequence title ) {
@@ -119,6 +131,10 @@ public class VerticalStepperItemView extends FrameLayout {
 
     public void setSummary( CharSequence summary ) {
         this.summary.setText( summary );
+    }
+
+    public View getContentView() {
+        return content.getChildAt( 0 );
     }
 
     public void setContentView( View view ) {
@@ -143,6 +159,7 @@ public class VerticalStepperItemView extends FrameLayout {
 
     private void setStateInactive() {
         setMarginBottom( false );
+        circle.setNumber( number );
         circle.setBackgroundInactive();
         title.setTextColor( ResourcesCompat.getColor(
             getResources(),
@@ -155,6 +172,7 @@ public class VerticalStepperItemView extends FrameLayout {
 
     private void setStateActive() {
         setMarginBottom( true );
+        circle.setNumber( number );
         circle.setBackgroundActive();
         title.setTextColor( ResourcesCompat.getColor(
             getResources(),
@@ -192,9 +210,15 @@ public class VerticalStepperItemView extends FrameLayout {
         setClickable( true );
         setOnClickListener( new OnClickListener() {
             @Override
-            public void onClick( View v ) {
-                Toast.makeText( getContext(), "yolo", Toast.LENGTH_LONG )
-                                .show();
+            public void onClick( View view ) {
+                VerticalStepperItemView active = getVerticalStepperView()
+                                .getAdapter().getActiveItem();
+
+                if ( active != null ) {
+                    active.setState( STATE_INACTIVE );
+                }
+
+                VerticalStepperItemView.this.setState( STATE_ACTIVE );
             }
         } );
     }
@@ -234,5 +258,46 @@ public class VerticalStepperItemView extends FrameLayout {
         super.onSizeChanged( width, height, oldWidth, oldHeight );
 
         connector.adjust( getContext(), width, height );
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        // Add an ID to the content view to enable the state mechanism
+        if ( getContentView().getId() == NO_ID )
+            getContentView().setId( View.generateViewId() );
+
+        SparseArray<Parcelable> content = new SparseArray<>( getChildCount() );
+        getContentView().saveHierarchyState( content );
+
+        Bundle bundle = new Bundle( 3 );
+        bundle.putParcelable( "super", super.onSaveInstanceState() );
+        bundle.putInt( "state", state );
+        bundle.putSparseParcelableArray( "content", content );
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState( Parcelable state ) {
+        if ( state instanceof Bundle ) {
+            Bundle bundle = (Bundle) state;
+            super.onRestoreInstanceState( bundle.getParcelable( "super" ) );
+            setCircleNumber( bundle.getInt( "number" ) );
+            SparseArray<Parcelable> container = bundle
+                            .getSparseParcelableArray( "content" );
+
+            getContentView().restoreHierarchyState( container );
+        } else
+            super.onRestoreInstanceState( state );
+    }
+
+    @Override
+    protected void dispatchSaveInstanceState( SparseArray<Parcelable> container ) {
+        dispatchFreezeSelfOnly( container );
+    }
+
+    @Override
+    protected void dispatchRestoreInstanceState(
+        SparseArray<Parcelable> container ) {
+        dispatchThawSelfOnly( container );
     }
 }

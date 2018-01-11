@@ -1,20 +1,20 @@
 package com.liefery.android.vertical_stepper_view;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
-import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.STATE_ACTIVE;
-import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.STATE_INACTIVE;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.*;
 
 public abstract class VerticalStepperAdapter {
     private VerticalStepperItemView[] itemViews = new VerticalStepperItemView[getCount()];
-
-    public VerticalStepperAdapter() {
-    }
 
     public VerticalStepperItemView getItem( int position ) {
         return itemViews[position];
@@ -41,6 +41,7 @@ public abstract class VerticalStepperAdapter {
         if ( itemViews[position] == null ) {
             VerticalStepperItemView itemView = new VerticalStepperItemView(
                 context );
+
             View contentView = onCreateContentView(
                 context,
                 position,
@@ -53,10 +54,47 @@ public abstract class VerticalStepperAdapter {
             itemView.setSummary( getSummary( position ) );
             itemView.setEditable( isEditable( position ) );
             itemView.setShowConnectorLine( position < getCount() - 1 );
+
             itemViews[position] = itemView;
         }
 
         return itemViews[position];
+    }
+
+    public ArrayList<VerticalStepperItemView> getItems() {
+        return new ArrayList<>( Arrays.asList( itemViews ) );
+    }
+
+    public ArrayList<VerticalStepperItemView> getCompletedItems() {
+        ArrayList<VerticalStepperItemView> completed = new ArrayList<>();
+
+        for ( VerticalStepperItemView itemView : itemViews ) {
+            if ( itemView.getState() == STATE_COMPLETE )
+                completed.add( itemView );
+        }
+
+        return completed;
+    }
+
+    public ArrayList<VerticalStepperItemView> getInactiveItems() {
+        ArrayList<VerticalStepperItemView> completed = new ArrayList<>();
+
+        for ( VerticalStepperItemView itemView : itemViews ) {
+            if ( itemView.getState() == STATE_INACTIVE )
+                completed.add( itemView );
+        }
+
+        return completed;
+    }
+
+    @Nullable
+    public VerticalStepperItemView getActiveItem() {
+        for ( VerticalStepperItemView itemView : itemViews ) {
+            if ( itemView.getState() == STATE_ACTIVE )
+                return itemView;
+        }
+
+        return null;
     }
 
     private VerticalStepperNavigation onCreateNavigation( int position ) {
@@ -80,5 +118,27 @@ public abstract class VerticalStepperAdapter {
                 position - 1,
                 position,
                 position + 1 );
+    }
+
+    Bundle saveInstanceState() {
+        Bundle bundle = new Bundle( 2 );
+
+        Parcelable[] states = new Parcelable[itemViews.length];
+
+        for ( int i = 0; i < states.length; i++ ) {
+            states[i] = itemViews[i].onSaveInstanceState();
+        }
+
+        bundle.putParcelableArray( "states", states );
+
+        return bundle;
+    }
+
+    void restoreInstanceState( Bundle bundle ) {
+        Parcelable[] states = bundle.getParcelableArray( "states" );
+
+        for ( int i = 0; i < states.length; i++ ) {
+            itemViews[i].onRestoreInstanceState( states[i] );
+        }
     }
 }

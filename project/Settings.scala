@@ -10,7 +10,7 @@ object Settings {
             "-target" :: "1.7" ::
             Nil,
         lintStrict := true,
-        minSdkVersion := "14",
+        minSdkVersion := "17",
         organization := "com.liefery.android",
         platformTarget := "android-26",
         resolvers += "Google Maven" at "https://maven.google.com",

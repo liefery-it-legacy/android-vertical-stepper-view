@@ -1,4 +1,4 @@
-# Android Icon Spinner
+# Android Vertical Stepper View
 
 > TODO
 
