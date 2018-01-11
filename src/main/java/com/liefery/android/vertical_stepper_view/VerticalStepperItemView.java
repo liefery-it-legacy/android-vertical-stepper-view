@@ -158,6 +158,7 @@ public class VerticalStepperItemView extends FrameLayout {
     }
 
     private void setStateInactive() {
+        disableClickListener();
         setMarginBottom( false );
         circle.setNumber( number );
         circle.setBackgroundInactive();
@@ -171,6 +172,7 @@ public class VerticalStepperItemView extends FrameLayout {
     }
 
     private void setStateActive() {
+        disableClickListener();
         setMarginBottom( true );
         circle.setNumber( number );
         circle.setBackgroundActive();
