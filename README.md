@@ -1,10 +1,10 @@
 # Android Vertical Stepper View
 
-> TODO
+> A vertical stepper implementation of the [material design specification][1]
 
 [![](https://jitpack.io/v/liefery/android-vertical-stepper-view.svg)](https://jitpack.io/#liefery/android-vertical-stepper-view)
 
-![Sample app screenshot](https://liefery.github.io/android-vertical-stepper-view/screenshot.png)
+![Sample app screenshots](https://liefery.github.io/android-vertical-stepper-view/screenshots.png)
 
 ## Installation
 
@@ -30,3 +30,19 @@ dependencies {
     compile 'com.github.liefery:android-vertical-stepper-view:0.0.1'
 }
 ```
+
+## Feature Overview
+
+- Sticks closely to the [material design guidelines][1]
+- Maintains state across configuration changes
+- Allows to go back to completed steps
+- High customizability (e.g. the navigation buttons are provided by the user)
+
+The library is currently lacking animations between step transitions.
+
+## Usage
+
+Please take a look at the [sample][2] application.
+
+[1]: https://material.io/guidelines/components/steppers.html
+[2]: /sample/src/main/java/com/liefery/android/vertical_stepper_view/sample
