@@ -268,13 +268,13 @@ public class VerticalStepperItemView extends FrameLayout {
         if ( getContentView().getId() == NO_ID )
             getContentView().setId( View.generateViewId() );
 
-        SparseArray<Parcelable> content = new SparseArray<>( getChildCount() );
-        getContentView().saveHierarchyState( content );
+        SparseArray<Parcelable> container = new SparseArray<>( getChildCount() );
+        getContentView().saveHierarchyState( container );
 
         Bundle bundle = new Bundle( 3 );
         bundle.putParcelable( "super", super.onSaveInstanceState() );
         bundle.putInt( "state", state );
-        bundle.putSparseParcelableArray( "content", content );
+        bundle.putSparseParcelableArray( "content", container );
         return bundle;
     }
 
@@ -283,7 +283,6 @@ public class VerticalStepperItemView extends FrameLayout {
         if ( state instanceof Bundle ) {
             Bundle bundle = (Bundle) state;
             super.onRestoreInstanceState( bundle.getParcelable( "super" ) );
-            setCircleNumber( bundle.getInt( "number" ) );
             SparseArray<Parcelable> container = bundle
                             .getSparseParcelableArray( "content" );
 
