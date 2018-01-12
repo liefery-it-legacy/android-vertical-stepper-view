@@ -6,6 +6,15 @@
 
 ![Sample app screenshots](https://liefery.github.io/android-vertical-stepper-view/screenshots.png)
 
+## Feature Overview
+
+- Sticks closely to the [material design guidelines][1]
+- Maintains state across configuration changes
+- Allows to go back to completed steps
+- High customizability (e.g. the navigation buttons are provided by the user)
+
+The library is currently lacking animations between step transitions.
+
 ## Installation
 
 ### sbt
@@ -30,15 +39,6 @@ dependencies {
     compile 'com.github.liefery:android-vertical-stepper-view:0.0.1'
 }
 ```
-
-## Feature Overview
-
-- Sticks closely to the [material design guidelines][1]
-- Maintains state across configuration changes
-- Allows to go back to completed steps
-- High customizability (e.g. the navigation buttons are provided by the user)
-
-The library is currently lacking animations between step transitions.
 
 ## Usage
 
