@@ -30,6 +30,12 @@ public abstract class VerticalStepperAdapter {
 
     public abstract boolean isEditable( int position );
 
+    public void notifyDataSetChanged() {
+        for ( int i = 0; i < itemViews.length; i++ ) {
+            applyData( itemViews[i], i );
+        }
+    }
+
     @NonNull
     public abstract View onCreateContentView(
         Context context,
@@ -48,17 +54,21 @@ public abstract class VerticalStepperAdapter {
                 onCreateNavigation( position ),
                 itemView );
             itemView.setState( position == 0 ? STATE_ACTIVE : STATE_INACTIVE );
-            itemView.setCircleNumber( position + 1 );
             itemView.setContentView( contentView );
-            itemView.setTitle( getTitle( position ) );
-            itemView.setSummary( getSummary( position ) );
-            itemView.setEditable( isEditable( position ) );
-            itemView.setShowConnectorLine( position < getCount() - 1 );
+            applyData( itemView, position );
 
             itemViews[position] = itemView;
         }
 
         return itemViews[position];
+    }
+
+    private void applyData( VerticalStepperItemView itemView, int position ) {
+        itemView.setCircleNumber( position + 1 );
+        itemView.setTitle( getTitle( position ) );
+        itemView.setSummary( getSummary( position ) );
+        itemView.setEditable( isEditable( position ) );
+        itemView.setShowConnectorLine( position < getCount() - 1 );
     }
 
     public ArrayList<VerticalStepperItemView> getItems() {
