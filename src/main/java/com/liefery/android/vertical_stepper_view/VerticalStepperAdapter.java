@@ -35,7 +35,7 @@ public abstract class VerticalStepperAdapter {
         Context context,
         int position,
         final VerticalStepperNavigation navigation,
-        VerticalStepperItemView parent );
+        final VerticalStepperItemView parent );
 
     public VerticalStepperItemView getView( Context context, int position ) {
         if ( itemViews[position] == null ) {

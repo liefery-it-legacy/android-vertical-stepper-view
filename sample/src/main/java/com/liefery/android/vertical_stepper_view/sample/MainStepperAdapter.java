@@ -13,10 +13,6 @@ import com.liefery.android.vertical_stepper_view.VerticalStepperNavigation;
 import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.STATE_COMPLETE;
 
 public class MainStepperAdapter extends VerticalStepperAdapter {
-    public MainStepperAdapter() {
-        super();
-    }
-
     @Override
     public int getCount() {
         return 5;
@@ -39,6 +35,7 @@ public class MainStepperAdapter extends VerticalStepperAdapter {
         return position == 2;
     }
 
+    @NonNull
     @Override
     public View onCreateContentView(
         Context context,
