@@ -71,11 +71,11 @@ public abstract class VerticalStepperAdapter {
         itemView.setShowConnectorLine( position < getCount() - 1 );
     }
 
-    public ArrayList<VerticalStepperItemView> getItems() {
-        return new ArrayList<>( Arrays.asList( itemViews ) );
+    public VerticalStepperItemView[] getItems() {
+        return Arrays.copyOf( itemViews, itemViews.length );
     }
 
-    public ArrayList<VerticalStepperItemView> getCompletedItems() {
+    public VerticalStepperItemView[] getCompletedItems() {
         ArrayList<VerticalStepperItemView> completed = new ArrayList<>();
 
         for ( VerticalStepperItemView itemView : itemViews ) {
@@ -83,10 +83,10 @@ public abstract class VerticalStepperAdapter {
                 completed.add( itemView );
         }
 
-        return completed;
+        return completed.toArray( new VerticalStepperItemView[completed.size()] );
     }
 
-    public ArrayList<VerticalStepperItemView> getInactiveItems() {
+    public VerticalStepperItemView[] getInactiveItems() {
         ArrayList<VerticalStepperItemView> completed = new ArrayList<>();
 
         for ( VerticalStepperItemView itemView : itemViews ) {
@@ -94,7 +94,7 @@ public abstract class VerticalStepperAdapter {
                 completed.add( itemView );
         }
 
-        return completed;
+        return completed.toArray( new VerticalStepperItemView[completed.size()] );
     }
 
     @Nullable
