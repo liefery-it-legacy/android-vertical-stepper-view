@@ -9,14 +9,12 @@ import android.os.Parcelable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -112,6 +110,9 @@ public class VerticalStepperItemView extends FrameLayout {
 
     public void setEditable( boolean editable ) {
         this.editable = editable;
+
+        if ( state == STATE_COMPLETE )
+            toggleEditMode();
     }
 
     public boolean isEditable() {
@@ -158,7 +159,7 @@ public class VerticalStepperItemView extends FrameLayout {
     }
 
     private void setStateInactive() {
-        disableClickListener();
+        disableEditMode();
         setMarginBottom( false );
         circle.setNumber( number );
         circle.setBackgroundInactive();
@@ -172,7 +173,7 @@ public class VerticalStepperItemView extends FrameLayout {
     }
 
     private void setStateActive() {
-        disableClickListener();
+        disableEditMode();
         setMarginBottom( true );
         circle.setNumber( number );
         circle.setBackgroundActive();
@@ -189,13 +190,7 @@ public class VerticalStepperItemView extends FrameLayout {
         setMarginBottom( false );
         circle.setBackgroundActive();
 
-        if ( isEditable() ) {
-            circle.setIconEdit();
-            enabledClickListener();
-        } else {
-            circle.setIconCheck();
-            disableClickListener();
-        }
+        toggleEditMode();
 
         title.setTextColor( ResourcesCompat.getColor(
             getResources(),
@@ -207,7 +202,15 @@ public class VerticalStepperItemView extends FrameLayout {
         content.setVisibility( View.GONE );
     }
 
-    private void enabledClickListener() {
+    private void toggleEditMode() {
+        if ( isEditable() )
+            enabledEditMode();
+        else
+            disableEditMode();
+    }
+
+    private void enabledEditMode() {
+        circle.setIconEdit();
         setForeground( ViewUtil.getSelectableItemBackground( getContext() ) );
         setClickable( true );
         setOnClickListener( new OnClickListener() {
@@ -225,7 +228,8 @@ public class VerticalStepperItemView extends FrameLayout {
         } );
     }
 
-    private void disableClickListener() {
+    private void disableEditMode() {
+        circle.setIconCheck();
         setForeground( null );
         setClickable( false );
         setOnClickListener( null );
