@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -30,6 +29,18 @@ public abstract class VerticalStepperAdapter {
 
     public abstract boolean isEditable( int position );
 
+    public int getInitialState( int position ) {
+        return position == 0 ? STATE_ACTIVE : STATE_INACTIVE;
+    }
+
+    public int getCircleNumber( int position ) {
+        return position + 1;
+    }
+
+    public boolean showConnectorLine( int position ) {
+        return position < getCount() - 1;
+    }
+
     public void notifyDataSetChanged() {
         for ( int i = 0; i < itemViews.length; i++ ) {
             applyData( itemViews[i], i );
@@ -47,28 +58,34 @@ public abstract class VerticalStepperAdapter {
         if ( itemViews[position] == null ) {
             VerticalStepperItemView itemView = new VerticalStepperItemView(
                 context );
-
-            View contentView = onCreateContentView(
-                context,
-                position,
-                onCreateNavigation( position ),
-                itemView );
-            itemView.setState( position == 0 ? STATE_ACTIVE : STATE_INACTIVE );
-            itemView.setContentView( contentView );
-            applyData( itemView, position );
-
+            initializeData( context, itemView, position );
             itemViews[position] = itemView;
         }
 
         return itemViews[position];
     }
 
+    private void initializeData(
+        Context context,
+        VerticalStepperItemView itemView,
+        int position ) {
+        View contentView = onCreateContentView(
+            context,
+            position,
+            onCreateNavigation( position ),
+            itemView );
+        itemView.setContentView( contentView );
+
+        itemView.setState( getInitialState( position ) );
+        applyData( itemView, position );
+    }
+
     private void applyData( VerticalStepperItemView itemView, int position ) {
-        itemView.setCircleNumber( position + 1 );
+        itemView.setCircleNumber( getCircleNumber( position ) );
         itemView.setTitle( getTitle( position ) );
         itemView.setSummary( getSummary( position ) );
         itemView.setEditable( isEditable( position ) );
-        itemView.setShowConnectorLine( position < getCount() - 1 );
+        itemView.setShowConnectorLine( showConnectorLine( position ) );
     }
 
     public VerticalStepperItemView[] getItems() {
