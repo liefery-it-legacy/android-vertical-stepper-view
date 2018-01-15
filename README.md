@@ -11,7 +11,7 @@
 - Sticks closely to the [material design guidelines][1]
 - Maintains state across configuration changes
 - Allows to go back to completed steps
-- High customizability (e.g. the navigation buttons are provided by the user)
+- Highly customizable (e.g. the navigation buttons are provided by the user)
 
 The library is currently lacking animations between step transitions.
 
@@ -22,7 +22,7 @@ The library is currently lacking animations between step transitions.
 ```scala
 resolvers += "jitpack" at "https://jitpack.io"
 
-libraryDependencies += "com.github.liefery" % "android-vertical-stepper-view" % "0.0.5"
+libraryDependencies += "com.github.liefery" % "android-vertical-stepper-view" % "0.0.6"
 ```
 
 ### Gradle
@@ -36,7 +36,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.liefery:android-vertical-stepper-view:0.0.5'
+    compile 'com.github.liefery:android-vertical-stepper-view:0.0.6'
 }
 ```
 
