@@ -3,10 +3,7 @@ package com.liefery.android.vertical_stepper_view;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -61,37 +58,11 @@ public class VerticalStepperView extends LinearLayout {
         for ( int i = 0; i < count; i++ ) {
             VerticalStepperItemView itemView = adapter
                             .getView( getContext(), i );
+
+            // Add an ID to enable the state mechanism
+            itemView.setId( i + 1 );
+
             addView( itemView, MATCH_PARENT, WRAP_CONTENT );
         }
-    }
-
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        Bundle adapterState = null;
-
-        if ( adapter != null )
-            adapterState = adapter.saveInstanceState();
-
-        Bundle bundle = new Bundle( 2 );
-        bundle.putParcelable( "super", superState );
-        bundle.putBundle( "adapter", adapterState );
-        return bundle;
-    }
-
-    @Override
-    protected void onRestoreInstanceState( Parcelable state ) {
-        if ( state instanceof Bundle ) {
-            Bundle bundle = (Bundle) state;
-
-            Parcelable superState = bundle.getParcelable( "super" );
-            super.onRestoreInstanceState( superState );
-
-            Bundle adapterState = bundle.getBundle( "adapter" );
-            if ( adapter != null && adapterState != null ) {
-                adapter.restoreInstanceState( adapterState );
-            }
-        } else
-            super.onRestoreInstanceState( state );
     }
 }

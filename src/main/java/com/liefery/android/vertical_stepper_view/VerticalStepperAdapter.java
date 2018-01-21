@@ -1,8 +1,6 @@
 package com.liefery.android.vertical_stepper_view;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -145,27 +143,5 @@ public abstract class VerticalStepperAdapter {
                 position - 1,
                 position,
                 position + 1 );
-    }
-
-    Bundle saveInstanceState() {
-        Bundle bundle = new Bundle( 2 );
-
-        Parcelable[] states = new Parcelable[itemViews.length];
-
-        for ( int i = 0; i < states.length; i++ ) {
-            states[i] = itemViews[i].onSaveInstanceState();
-        }
-
-        bundle.putParcelableArray( "states", states );
-
-        return bundle;
-    }
-
-    void restoreInstanceState( Bundle bundle ) {
-        Parcelable[] states = bundle.getParcelableArray( "states" );
-
-        for ( int i = 0; i < states.length; i++ ) {
-            itemViews[i].onRestoreInstanceState( states[i] );
-        }
     }
 }

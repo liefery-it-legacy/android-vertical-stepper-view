@@ -2,10 +2,12 @@ package com.liefery.android.vertical_stepper_view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -40,7 +42,7 @@ public class VerticalStepperItemView extends FrameLayout {
 
     private TextView summary;
 
-    private FrameLayout content;
+    private FrameLayout contentWrapper;
 
     private ConnectorLineDrawer connector;
 
@@ -91,7 +93,7 @@ public class VerticalStepperItemView extends FrameLayout {
         wrapper = (LinearLayout) findViewById( R.id.vertical_stepper_view_item_wrapper );
         title = (TextView) findViewById( R.id.vertical_stepper_view_item_title );
         summary = (TextView) findViewById( R.id.vertical_stepper_view_item_summary );
-        content = (FrameLayout) findViewById( R.id.vertical_stepper_view_item_content );
+        contentWrapper = (FrameLayout) findViewById( R.id.vertical_stepper_view_item_content_wrapper );
 
         connector = new ConnectorLineDrawer( context );
     }
@@ -135,12 +137,12 @@ public class VerticalStepperItemView extends FrameLayout {
     }
 
     public View getContentView() {
-        return content.getChildAt( 0 );
+        return contentWrapper.getChildAt( 0 );
     }
 
     public void setContentView( View view ) {
-        content.removeAllViews();
-        content.addView( view, MATCH_PARENT, WRAP_CONTENT );
+        contentWrapper.removeAllViews();
+        contentWrapper.addView( view, MATCH_PARENT, WRAP_CONTENT );
     }
 
     public void setState( int state ) {
@@ -169,7 +171,7 @@ public class VerticalStepperItemView extends FrameLayout {
             null ) );
         title.setTypeface( title.getTypeface(), Typeface.NORMAL );
         summary.setVisibility( View.GONE );
-        content.setVisibility( View.GONE );
+        contentWrapper.setVisibility( View.GONE );
     }
 
     private void setStateActive() {
@@ -183,7 +185,7 @@ public class VerticalStepperItemView extends FrameLayout {
             null ) );
         title.setTypeface( title.getTypeface(), Typeface.BOLD );
         summary.setVisibility( View.GONE );
-        content.setVisibility( View.VISIBLE );
+        contentWrapper.setVisibility( View.VISIBLE );
     }
 
     private void setStateComplete() {
@@ -199,7 +201,7 @@ public class VerticalStepperItemView extends FrameLayout {
         title.setTypeface( title.getTypeface(), Typeface.BOLD );
         summary.setVisibility( TextUtils.isEmpty( summary.getText() ) ? View.GONE
                         : View.VISIBLE );
-        content.setVisibility( View.GONE );
+        contentWrapper.setVisibility( View.GONE );
     }
 
     private void toggleEditMode() {
@@ -266,18 +268,15 @@ public class VerticalStepperItemView extends FrameLayout {
         connector.adjust( getContext(), width, height );
     }
 
+    @Nullable
     @Override
     protected Parcelable onSaveInstanceState() {
-        // Add an ID to the content view to enable the state mechanism
-        if ( getContentView().getId() == NO_ID )
-            getContentView().setId( ViewUtil.generateViewId() );
-
-        SparseArray<Parcelable> container = new SparseArray<>( getChildCount() );
+        SparseArray<Parcelable> container = new SparseArray<>( 1 );
         getContentView().saveHierarchyState( container );
 
         Bundle bundle = new Bundle( 3 );
         bundle.putParcelable( "super", super.onSaveInstanceState() );
-        bundle.putSparseParcelableArray( "content", container );
+        bundle.putSparseParcelableArray( "container", container );
         bundle.putInt( "state", state );
         return bundle;
     }
@@ -287,9 +286,8 @@ public class VerticalStepperItemView extends FrameLayout {
         if ( state instanceof Bundle ) {
             Bundle bundle = (Bundle) state;
             super.onRestoreInstanceState( bundle.getParcelable( "super" ) );
-            SparseArray<Parcelable> container = bundle
-                            .getSparseParcelableArray( "content" );
-            getContentView().restoreHierarchyState( container );
+            getContentView().restoreHierarchyState(
+                bundle.getSparseParcelableArray( "container" ) );
             setState( bundle.getInt( "state" ) );
         } else
             super.onRestoreInstanceState( state );
