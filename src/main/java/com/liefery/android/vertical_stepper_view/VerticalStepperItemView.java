@@ -270,7 +270,7 @@ public class VerticalStepperItemView extends FrameLayout {
     protected Parcelable onSaveInstanceState() {
         // Add an ID to the content view to enable the state mechanism
         if ( getContentView().getId() == NO_ID )
-            getContentView().setId( View.generateViewId() );
+            getContentView().setId( ViewUtil.generateViewId() );
 
         SparseArray<Parcelable> container = new SparseArray<>( getChildCount() );
         getContentView().saveHierarchyState( container );

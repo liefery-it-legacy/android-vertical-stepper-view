@@ -5,6 +5,8 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 class ViewUtil {
     static float dpToPx( Context context, float dp ) {
         return TypedValue.applyDimension(
@@ -20,4 +22,19 @@ class ViewUtil {
         typedArray.recycle();
         return drawable;
     }
+
+    private static final AtomicInteger nextGeneratedId = new AtomicInteger( 1 );
+
+    public static int generateViewId() {
+        for ( ;; ) {
+            final int result = nextGeneratedId.get();
+            int newValue = result + 1;
+            if ( newValue > 0x00FFFFFF )
+                newValue = 1;
+            if ( nextGeneratedId.compareAndSet( result, newValue ) ) {
+                return result;
+            }
+        }
+    }
+
 }
