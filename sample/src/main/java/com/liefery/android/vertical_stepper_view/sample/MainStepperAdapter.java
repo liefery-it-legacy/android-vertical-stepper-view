@@ -42,10 +42,7 @@ public class MainStepperAdapter extends VerticalStepperAdapter {
         int position,
         final VerticalStepperNavigation navigation,
         final VerticalStepperItemView parent ) {
-        View content = LayoutInflater.from( context ).inflate(
-            R.layout.item,
-            parent,
-            false );
+        View content = new MainItemView( context );
 
         Button actionContinue = content.findViewById( R.id.action_continue );
         actionContinue.setEnabled( navigation.hasNext() || navigation.isLast() );

@@ -142,6 +142,10 @@ public class VerticalStepperItemView extends FrameLayout {
 
     public void setContentView( View view ) {
         contentWrapper.removeAllViews();
+
+        if ( view.getId() == NO_ID )
+            view.setId( ViewUtil.generateViewId() );
+
         contentWrapper.addView( view, MATCH_PARENT, WRAP_CONTENT );
     }
 
@@ -274,9 +278,10 @@ public class VerticalStepperItemView extends FrameLayout {
         SparseArray<Parcelable> container = new SparseArray<>( 1 );
         getContentView().saveHierarchyState( container );
 
-        Bundle bundle = new Bundle( 3 );
+        Bundle bundle = new Bundle( 4 );
         bundle.putParcelable( "super", super.onSaveInstanceState() );
-        bundle.putSparseParcelableArray( "container", container );
+        bundle.putInt( "content-id", getContentView().getId() );
+        bundle.putSparseParcelableArray( "content-container", container );
         bundle.putInt( "state", state );
         return bundle;
     }
@@ -286,8 +291,9 @@ public class VerticalStepperItemView extends FrameLayout {
         if ( state instanceof Bundle ) {
             Bundle bundle = (Bundle) state;
             super.onRestoreInstanceState( bundle.getParcelable( "super" ) );
+            getContentView().setId( bundle.getInt( "content-id" ) );
             getContentView().restoreHierarchyState(
-                bundle.getSparseParcelableArray( "container" ) );
+                bundle.getSparseParcelableArray( "content-container" ) );
             setState( bundle.getInt( "state" ) );
         } else
             super.onRestoreInstanceState( state );

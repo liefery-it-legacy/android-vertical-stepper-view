@@ -60,7 +60,8 @@ public class VerticalStepperView extends LinearLayout {
                             .getView( getContext(), i );
 
             // Add an ID to enable the state mechanism
-            itemView.setId( i + 1 );
+            if ( itemView.getId() == NO_ID )
+                itemView.setId( i + 1 );
 
             addView( itemView, MATCH_PARENT, WRAP_CONTENT );
         }
