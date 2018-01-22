@@ -22,7 +22,7 @@ The library is currently lacking animations between step transitions.
 ```scala
 resolvers += "jitpack" at "https://jitpack.io"
 
-libraryDependencies += "com.github.liefery" % "android-vertical-stepper-view" % "0.0.8"
+libraryDependencies += "com.github.liefery" % "android-vertical-stepper-view" % "0.0.9"
 ```
 
 ### Gradle
@@ -36,7 +36,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.liefery:android-vertical-stepper-view:0.0.8'
+    compile 'com.github.liefery:android-vertical-stepper-view:0.0.9'
 }
 ```
 
