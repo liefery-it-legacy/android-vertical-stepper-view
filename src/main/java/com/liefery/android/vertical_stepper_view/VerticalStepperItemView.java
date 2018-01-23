@@ -134,6 +134,9 @@ public class VerticalStepperItemView extends FrameLayout {
 
     public void setSummary( CharSequence summary ) {
         this.summary.setText( summary );
+
+        if ( state == STATE_COMPLETE )
+            this.summary.setVisibility( VISIBLE );
     }
 
     public View getContentView() {
