@@ -5,13 +5,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -98,12 +94,9 @@ public class VerticalStepperItemView extends FrameLayout {
         connector = new ConnectorLineDrawer( context );
     }
 
-    public VerticalStepperView getVerticalStepperView() {
-        return (VerticalStepperView) getParent();
-    }
-
     public void setShowConnectorLine( boolean show ) {
         showConnectorLine = show;
+        setMarginBottom( state == STATE_ACTIVE );
     }
 
     public boolean getShowConnectorLine() {
@@ -114,7 +107,10 @@ public class VerticalStepperItemView extends FrameLayout {
         this.editable = editable;
 
         if ( state == STATE_COMPLETE )
-            toggleEditMode();
+            if ( isEditable() )
+                circle.setIconEdit();
+            else
+                circle.setIconCheck();
     }
 
     public boolean isEditable() {
@@ -145,10 +141,6 @@ public class VerticalStepperItemView extends FrameLayout {
 
     public void setContentView( View view ) {
         contentWrapper.removeAllViews();
-
-        if ( view.getId() == NO_ID )
-            view.setId( ViewUtil.generateViewId() );
-
         contentWrapper.addView( view, MATCH_PARENT, WRAP_CONTENT );
     }
 
@@ -168,7 +160,7 @@ public class VerticalStepperItemView extends FrameLayout {
     }
 
     private void setStateInactive() {
-        disableEditMode();
+        circle.setIconEdit();
         setMarginBottom( false );
         circle.setNumber( number );
         circle.setBackgroundInactive();
@@ -182,7 +174,7 @@ public class VerticalStepperItemView extends FrameLayout {
     }
 
     private void setStateActive() {
-        disableEditMode();
+        circle.setIconEdit();
         setMarginBottom( true );
         circle.setNumber( number );
         circle.setBackgroundActive();
@@ -199,7 +191,10 @@ public class VerticalStepperItemView extends FrameLayout {
         setMarginBottom( false );
         circle.setBackgroundActive();
 
-        toggleEditMode();
+        if ( isEditable() )
+            circle.setIconEdit();
+        else
+            circle.setIconCheck();
 
         title.setTextColor( ResourcesCompat.getColor(
             getResources(),
@@ -209,39 +204,6 @@ public class VerticalStepperItemView extends FrameLayout {
         summary.setVisibility( TextUtils.isEmpty( summary.getText() ) ? View.GONE
                         : View.VISIBLE );
         contentWrapper.setVisibility( View.GONE );
-    }
-
-    private void toggleEditMode() {
-        if ( isEditable() )
-            enabledEditMode();
-        else
-            disableEditMode();
-    }
-
-    private void enabledEditMode() {
-        circle.setIconEdit();
-        setForeground( ViewUtil.getSelectableItemBackground( getContext() ) );
-        setClickable( true );
-        setOnClickListener( new OnClickListener() {
-            @Override
-            public void onClick( View view ) {
-                VerticalStepperItemView active = getVerticalStepperView()
-                                .getAdapter().getActiveItem();
-
-                if ( active != null ) {
-                    active.setState( STATE_INACTIVE );
-                }
-
-                VerticalStepperItemView.this.setState( STATE_ACTIVE );
-            }
-        } );
-    }
-
-    private void disableEditMode() {
-        circle.setIconCheck();
-        setForeground( null );
-        setClickable( false );
-        setOnClickListener( null );
     }
 
     private void setMarginBottom( boolean active ) {
@@ -273,43 +235,5 @@ public class VerticalStepperItemView extends FrameLayout {
         super.onSizeChanged( width, height, oldWidth, oldHeight );
 
         connector.adjust( getContext(), width, height );
-    }
-
-    @Nullable
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        SparseArray<Parcelable> container = new SparseArray<>( 1 );
-        getContentView().saveHierarchyState( container );
-
-        Bundle bundle = new Bundle( 4 );
-        bundle.putParcelable( "super", super.onSaveInstanceState() );
-        bundle.putInt( "content-id", getContentView().getId() );
-        bundle.putSparseParcelableArray( "content-container", container );
-        bundle.putInt( "state", state );
-        return bundle;
-    }
-
-    @Override
-    protected void onRestoreInstanceState( Parcelable state ) {
-        if ( state instanceof Bundle ) {
-            Bundle bundle = (Bundle) state;
-            super.onRestoreInstanceState( bundle.getParcelable( "super" ) );
-            getContentView().setId( bundle.getInt( "content-id" ) );
-            getContentView().restoreHierarchyState(
-                bundle.getSparseParcelableArray( "content-container" ) );
-            setState( bundle.getInt( "state" ) );
-        } else
-            super.onRestoreInstanceState( state );
-    }
-
-    @Override
-    protected void dispatchSaveInstanceState( SparseArray<Parcelable> container ) {
-        dispatchFreezeSelfOnly( container );
-    }
-
-    @Override
-    protected void dispatchRestoreInstanceState(
-        SparseArray<Parcelable> container ) {
-        dispatchThawSelfOnly( container );
     }
 }

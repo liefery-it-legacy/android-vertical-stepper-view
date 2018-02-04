@@ -2,16 +2,20 @@ package com.liefery.android.vertical_stepper_view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import java.util.ArrayList;
 
-public class VerticalStepperView extends LinearLayout {
-    private VerticalStepperAdapter adapter;
-
+public class VerticalStepperView extends ListView {
     public VerticalStepperView( Context context ) {
         super( context );
         initialize( context );
@@ -30,7 +34,7 @@ public class VerticalStepperView extends LinearLayout {
         initialize( context );
     }
 
-    @TargetApi( Build.VERSION_CODES.LOLLIPOP )
+    @TargetApi( 21 )
     public VerticalStepperView(
         Context context,
         AttributeSet attrs,
@@ -41,29 +45,97 @@ public class VerticalStepperView extends LinearLayout {
     }
 
     private void initialize( Context context ) {
-        setOrientation( VERTICAL );
+        setDivider( null );
+        setOnItemClickListener( new OnItemClickListener() {
+            @Override
+            public void onItemClick(
+                AdapterView<?> parent,
+                View view,
+                int position,
+                long id ) {
+                getAdapter().jumpTo( position );
+            }
+        } );
     }
 
+    @Override
     public VerticalStepperAdapter getAdapter() {
-        return adapter;
+        return (VerticalStepperAdapter) super.getAdapter();
     }
 
-    public void setAdapter( VerticalStepperAdapter adapter ) {
-        this.adapter = adapter;
+    @Override
+    public void setAdapter( ListAdapter adapter ) {
+        if ( !( adapter instanceof VerticalStepperAdapter ) )
+            throw new IllegalArgumentException(
+                "Must be a VerticalStepperAdapter" );
+        super.setAdapter( adapter );
+    }
 
-        removeAllViews();
+    public void setStepperAdapter( VerticalStepperAdapter adapter ) {
+        setAdapter( adapter );
+    }
 
-        int count = adapter.getCount();
+    @Nullable
+    @Override
+    public Parcelable onSaveInstanceState() {
+        SparseArray<View> contentViews = getAdapter().getContentViews();
+        ArrayList<Bundle> containers = new ArrayList<>( contentViews.size() );
 
-        for ( int i = 0; i < count; i++ ) {
-            VerticalStepperItemView itemView = adapter
-                            .getView( getContext(), i );
+        for ( int i = 0; i < contentViews.size(); i++ ) {
+            int id = contentViews.keyAt( i );
+            View contentView = contentViews.valueAt( i );
+            SparseArray<Parcelable> container = new SparseArray<>( 1 );
+            contentView.saveHierarchyState( container );
 
-            // Add an ID to enable the state mechanism
-            if ( itemView.getId() == NO_ID )
-                itemView.setId( i + 1 );
+            Bundle bundle = new Bundle( 2 );
+            bundle.putInt( "id", id );
+            bundle.putSparseParcelableArray( "container", container );
 
-            addView( itemView, MATCH_PARENT, WRAP_CONTENT );
+            containers.add( bundle );
         }
+
+        Bundle bundle = new Bundle( 3 );
+        bundle.putParcelable( "super", super.onSaveInstanceState() );
+        bundle.putParcelableArrayList( "containers", containers );
+        bundle.putInt( "focus", getAdapter().getFocus() );
+
+        return bundle;
+    }
+
+    @Override
+    public void onRestoreInstanceState( Parcelable state ) {
+        if ( state instanceof Bundle ) {
+            Bundle bundle = (Bundle) state;
+            super.onRestoreInstanceState( bundle.getParcelable( "super" ) );
+
+            ArrayList<Bundle> containers = bundle
+                            .getParcelableArrayList( "containers" );
+            SparseArray<View> contentViews = getAdapter().getContentViews();
+
+            for ( Bundle contentViewBundle : containers ) {
+                int id = contentViewBundle.getInt( "id" );
+                SparseArray<Parcelable> container = contentViewBundle
+                                .getSparseParcelableArray( "container" );
+
+                View contentView = contentViews.get( id );
+                if ( contentView != null ) {
+                    contentView.restoreHierarchyState( container );
+                }
+            }
+
+            getAdapter().jumpTo( bundle.getInt( "focus" ) );
+        } else
+            super.onRestoreInstanceState( state );
+    }
+
+    @Override
+    protected void dispatchSaveInstanceState( SparseArray<Parcelable> container ) {
+        dispatchFreezeSelfOnly( container );
+    }
+
+    @Override
+    protected void dispatchRestoreInstanceState(
+        SparseArray<Parcelable> container ) {
+        dispatchThawSelfOnly( container );
     }
 }

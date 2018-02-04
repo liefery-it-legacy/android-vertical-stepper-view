@@ -15,26 +15,4 @@ class ViewUtil {
             context.getResources().getDisplayMetrics() );
     }
 
-    static Drawable getSelectableItemBackground( Context context ) {
-        int[] attrs = new int[] { R.attr.selectableItemBackground };
-        TypedArray typedArray = context.obtainStyledAttributes( attrs );
-        Drawable drawable = typedArray.getDrawable( 0 );
-        typedArray.recycle();
-        return drawable;
-    }
-
-    private static final AtomicInteger nextGeneratedId = new AtomicInteger( 1 );
-
-    public static int generateViewId() {
-        for ( ;; ) {
-            final int result = nextGeneratedId.get();
-            int newValue = result + 1;
-            if ( newValue > 0x00FFFFFF )
-                newValue = 1;
-            if ( nextGeneratedId.compareAndSet( result, newValue ) ) {
-                return result;
-            }
-        }
-    }
-
 }

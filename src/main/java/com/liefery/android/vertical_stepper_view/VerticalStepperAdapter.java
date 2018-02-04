@@ -3,21 +3,32 @@ package com.liefery.android.vertical_stepper_view;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 import android.view.View;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 
 import static com.liefery.android.vertical_stepper_view.VerticalStepperItemView.*;
 
-public abstract class VerticalStepperAdapter {
-    private VerticalStepperItemView[] itemViews = new VerticalStepperItemView[getCount()];
+public abstract class VerticalStepperAdapter extends BaseAdapter {
+    private int focus = 0;
 
-    public VerticalStepperItemView getItem( int position ) {
-        return itemViews[position];
+    private SparseArray<View> contentViews = new SparseArray<View>( getCount() );
+
+    public VerticalStepperAdapter( Context context ) {
+        for ( int i = 0; i < getCount(); i++ ) {
+            getContentView( context, i );
+        }
     }
 
-    public abstract int getCount();
+    public SparseArray<View> getContentViews() {
+        return contentViews;
+    }
+
+    @Override
+    public boolean isEnabled( int position ) {
+        return isEditable( position ) && getState( position ) == STATE_COMPLETE;
+    }
 
     @NonNull
     public abstract CharSequence getTitle( int position );
@@ -27,58 +38,76 @@ public abstract class VerticalStepperAdapter {
 
     public abstract boolean isEditable( int position );
 
-    public int getInitialState( int position ) {
-        return position == 0 ? STATE_ACTIVE : STATE_INACTIVE;
+    @Override
+    public long getItemId( int position ) {
+        return position;
     }
 
-    public int getCircleNumber( int position ) {
+    @Override
+    public View getView( int position, View convertView, ViewGroup parent ) {
+        Context context = parent.getContext();
+        VerticalStepperItemView itemView;
+
+        if ( convertView == null ) {
+            itemView = new VerticalStepperItemView( context );
+        } else {
+            itemView = (VerticalStepperItemView) convertView;
+        }
+
+        applyData( context, itemView, position );
+
+        return itemView;
+    }
+
+    public int getState( int position ) {
+        if ( position == focus )
+            return STATE_ACTIVE;
+        else if ( position < focus )
+            return STATE_COMPLETE;
+        else
+            return STATE_INACTIVE;
+    }
+
+    private int getCircleNumber( int position ) {
         return position + 1;
     }
 
-    public boolean showConnectorLine( int position ) {
+    private boolean showConnectorLine( int position ) {
         return position < getCount() - 1;
     }
 
-    public void notifyDataSetChanged() {
-        for ( int i = 0; i < itemViews.length; i++ ) {
-            applyData( itemViews[i], i );
-        }
-    }
-
     @NonNull
-    public abstract View onCreateContentView(
-        Context context,
-        int position,
-        final VerticalStepperNavigation navigation,
-        final VerticalStepperItemView parent );
+    public abstract View onCreateContentView( Context context, int position );
 
-    public VerticalStepperItemView getView( Context context, int position ) {
-        if ( itemViews[position] == null ) {
-            VerticalStepperItemView itemView = new VerticalStepperItemView(
-                context );
-            initializeData( context, itemView, position );
-            itemViews[position] = itemView;
+    private View getContentView( Context context, int position ) {
+        int id = (int) getItemId( position );
+        View contentView = contentViews.get( id );
+
+        if ( contentView == null ) {
+            contentView = onCreateContentView( context, position );
+            contentViews.put( id, contentView );
         }
 
-        return itemViews[position];
+        return contentView;
     }
 
-    private void initializeData(
+    private void applyData(
         Context context,
         VerticalStepperItemView itemView,
         int position ) {
-        View contentView = onCreateContentView(
-            context,
-            position,
-            onCreateNavigation( position ),
-            itemView );
-        itemView.setContentView( contentView );
+        View currentContentView = itemView.getContentView();
+        View contentView = getContentView( context, position );
 
-        itemView.setState( getInitialState( position ) );
-        applyData( itemView, position );
-    }
+        if ( currentContentView != contentView ) {
+            // Make sure the content view isn't attached to a foreign parent
+            ViewGroup parent = (ViewGroup) contentView.getParent();
+            if ( parent != null )
+                parent.removeView( contentView );
 
-    private void applyData( VerticalStepperItemView itemView, int position ) {
+            itemView.setContentView( contentView );
+        }
+
+        itemView.setState( getState( position ) );
         itemView.setCircleNumber( getCircleNumber( position ) );
         itemView.setTitle( getTitle( position ) );
         itemView.setSummary( getSummary( position ) );
@@ -86,62 +115,36 @@ public abstract class VerticalStepperAdapter {
         itemView.setShowConnectorLine( showConnectorLine( position ) );
     }
 
-    public VerticalStepperItemView[] getItems() {
-        return Arrays.copyOf( itemViews, itemViews.length );
+    public int getFocus() {
+        return focus;
     }
 
-    public VerticalStepperItemView[] getCompletedItems() {
-        ArrayList<VerticalStepperItemView> completed = new ArrayList<>();
-
-        for ( VerticalStepperItemView itemView : itemViews ) {
-            if ( itemView.getState() == STATE_COMPLETE )
-                completed.add( itemView );
+    public void jumpTo( int position ) {
+        if ( focus != position ) {
+            focus = position;
+            notifyDataSetChanged();
         }
-
-        return completed.toArray( new VerticalStepperItemView[completed.size()] );
     }
 
-    public VerticalStepperItemView[] getInactiveItems() {
-        ArrayList<VerticalStepperItemView> completed = new ArrayList<>();
-
-        for ( VerticalStepperItemView itemView : itemViews ) {
-            if ( itemView.getState() == STATE_INACTIVE )
-                completed.add( itemView );
-        }
-
-        return completed.toArray( new VerticalStepperItemView[completed.size()] );
+    public boolean hasPrevious() {
+        return focus > 0;
     }
 
     @Nullable
-    public VerticalStepperItemView getActiveItem() {
-        for ( VerticalStepperItemView itemView : itemViews ) {
-            if ( itemView.getState() == STATE_ACTIVE )
-                return itemView;
+    public void previous() {
+        if ( hasPrevious() ) {
+            jumpTo( focus - 1 );
         }
-
-        return null;
     }
 
-    private VerticalStepperNavigation onCreateNavigation( int position ) {
-        if ( itemViews.length == 1 )
-            return new VerticalStepperNavigation( this, -1, position, -1 );
-        else if ( position == 0 )
-            return new VerticalStepperNavigation(
-                this,
-                -1,
-                position,
-                position + 1 );
-        else if ( position == getCount() - 1 )
-            return new VerticalStepperNavigation(
-                this,
-                position - 1,
-                position,
-                -1 );
-        else
-            return new VerticalStepperNavigation(
-                this,
-                position - 1,
-                position,
-                position + 1 );
+    public boolean hasNext() {
+        return focus < getCount() - 1;
+    }
+
+    @Nullable
+    public void next() {
+        if ( hasNext() ) {
+            jumpTo( focus + 1 );
+        }
     }
 }

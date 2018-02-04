@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
+<com.liefery.android.vertical_stepper_view.VerticalStepperView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scroll"
+    android:id="@+id/stepper_list"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <com.liefery.android.vertical_stepper_view.VerticalStepperView
-        android:id="@+id/stepper"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:padding="16dp" />
-
-</ScrollView>
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:padding="16dp"
+    android:scrollbarStyle="outsideOverlay" />

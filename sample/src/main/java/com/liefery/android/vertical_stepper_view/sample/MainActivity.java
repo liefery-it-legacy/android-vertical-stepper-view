@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView( R.layout.main );
 
-        VerticalStepperView stepper = findViewById( R.id.stepper );
-        stepper.setAdapter( new MainStepperAdapter() );
+        VerticalStepperView stepper = findViewById( R.id.stepper_list );
+        stepper.setStepperAdapter( new MainStepperAdapter( this ) );
     }
 }
