@@ -2,8 +2,14 @@ package com.liefery.android.vertical_stepper_view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -54,6 +60,12 @@ public class VerticalStepperItemCircleView extends FrameLayout {
     }
 
     public void setBackgroundActive() {
+        GradientDrawable drawable = (GradientDrawable) ContextCompat
+                        .getDrawable(
+                            getContext(),
+                            R.drawable.vertical_stepper_view_item_circle_active );
+        drawable.setColor( Util
+                        .getThemeColor( getContext(), R.attr.colorAccent ) );
         setBackgroundResource( R.drawable.vertical_stepper_view_item_circle_active );
     }
 

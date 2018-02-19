@@ -8,6 +8,8 @@
         android:width="24dp"
         android:height="24dp" />
 
-    <solid android:color="?colorPrimary" />
+    <!-- To be set to ?colorPrimary programmatically for compatibility reasons -->
+
+    <solid android:color="@android:color/black" />
 
 </shape>

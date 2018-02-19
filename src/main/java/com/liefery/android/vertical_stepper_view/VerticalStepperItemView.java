@@ -77,7 +77,7 @@ public class VerticalStepperItemView extends FrameLayout {
         setClipChildren( false );
         setClipToPadding( false );
 
-        int padding = (int) ViewUtil.dpToPx( context, 8 );
+        int padding = (int) Util.dpToPx( context, 8 );
         setPadding( padding, padding, padding, 0 );
 
         LayoutInflater.from( context ).inflate(
@@ -213,9 +213,9 @@ public class VerticalStepperItemView extends FrameLayout {
         if ( !getShowConnectorLine() )
             params.bottomMargin = 0;
         else if ( active )
-            params.bottomMargin = (int) ViewUtil.dpToPx( getContext(), 48 );
+            params.bottomMargin = (int) Util.dpToPx( getContext(), 48 );
         else
-            params.bottomMargin = (int) ViewUtil.dpToPx( getContext(), 40 );
+            params.bottomMargin = (int) Util.dpToPx( getContext(), 40 );
     }
 
     @Override
