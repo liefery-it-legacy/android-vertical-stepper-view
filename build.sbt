@@ -3,7 +3,7 @@ lazy val root = project.in( file( "." ) )
     .settings( Settings.common )
     .settings(
         libraryDependencies ++=
-            "com.android.support" % "appcompat-v7" % "26.1.0" ::
+            "com.android.support" % "appcompat-v7" % "27.1.1" ::
             Nil,
         name := "vertical-stepper-view",
         publishArtifact in ( Compile, packageDoc ) := false

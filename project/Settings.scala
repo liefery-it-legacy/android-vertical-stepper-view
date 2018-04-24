@@ -12,9 +12,9 @@ object Settings {
         lintStrict := true,
         minSdkVersion := "14",
         organization := "com.liefery.android",
-        platformTarget := "android-26",
+        platformTarget := "android-27",
         resolvers += "Google Maven" at "https://maven.google.com",
         scalaVersion := "2.11.12",
-        targetSdkVersion := "26"
+        targetSdkVersion := "27"
     )
 }
